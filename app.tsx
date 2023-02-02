@@ -86,13 +86,6 @@ const App = () => {
 
           setCall(call);
 
-          // this way works with 1.9.1
-          //   const tracks = createBeepAudioTracksOldWay();
-          //   const localAudioStream1 = new LocalAudioStream(tracks[0]);
-
-          const stream = createBeepAudioStreamToSend();
-          const localAudioStream2 = new LocalAudioStream(stream);
-
           const callStateChangedHandler = () => {
             if (call.state === "Connected") {
               setCallIsConnected(true);
