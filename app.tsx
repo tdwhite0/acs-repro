@@ -9,6 +9,7 @@ const App = () => {
   const [joinUrl, setJoinUrl] = useState("");
   const [call, setCall] = useState<Call>();
   const [callIsConnected, setCallIsConnected] = useState(false);
+  const [callClient, setCallClient] = useState<CallClient>();
 
   const getACSToken = async () => {
     const identityClient = new CommunicationIdentityClient(acsConnectionString);
@@ -71,6 +72,7 @@ const App = () => {
           let identity = await getACSToken();
 
           const callClient = new CallClient();
+          setCallClient(callClient);
           const tokenCredential = new AzureCommunicationTokenCredential(identity.token);
           let callAgent = await callClient.createCallAgent(tokenCredential, { displayName: "ACS Test" });
 
@@ -111,11 +113,13 @@ const App = () => {
           </button>
 
           <button
-            onClick={() => {
+            onClick={async () => {
               if (!call) return;
 
               const stream = createBeepAudioStreamToSend();
-              const localAudioStream = new LocalAudioStream(stream);
+              const deviceManager = await callClient.getDeviceManager();
+              const localAudioStream = new LocalAudioStream(deviceManager.selectedMicrophone);
+              localAudioStream.setMediaStream(stream);
               call.startAudio(localAudioStream);
             }}>
             Send Beep 1.10
